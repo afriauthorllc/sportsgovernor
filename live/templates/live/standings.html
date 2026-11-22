@@ -1,0 +1,40 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+<h1 style="font-size:26px;font-weight:800;margin:6px 0 14px;color:#fff;">Standings {% if selected %}• {{ selected.name }}{% endif %}</h1>
+<div style="display:flex;gap:8px;margin:0 0 16px;overflow-x:auto;white-space:nowrap;padding-bottom:6px;">
+  {% for l in leagues %}
+  <a href="/live/standings/?league={{ l.id }}" style="padding:9px 14px;border-radius:999px;background:{% if selected and selected.id == l.id %}#22c55e{% else %}#1e293b{% endif %};color:{% if selected and selected.id == l.id %}#000{% else %}#fff{% endif %};font-weight:700;text-decoration:none;font-size:13px;white-space:nowrap;flex-shrink:0;">{{ l.name|truncatechars:18 }}</a>
+  {% endfor %}
+</div>
+<div style="background:#1e293b;border-radius:16px;overflow-x:auto;width:100%;max-width:100%;">
+  <table style="width:100%;min-width:520px;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="color:#94a3b8;font-size:11px;letter-spacing:.5px;text-transform:uppercase;">
+        <th style="text-align:left;padding:12px 10px;position:sticky;left:0;background:#1e293b;min-width:36px;">#</th>
+        <th style="text-align:left;padding:12px 10px;position:sticky;left:36px;background:#1e293b;min-width:150px;">Team</th>
+        <th style="text-align:center;padding:12px 8px;">P</th>
+        <th style="text-align:center;padding:12px 8px;">W</th>
+        <th style="text-align:center;padding:12px 8px;">D</th>
+        <th style="text-align:center;padding:12px 8px;">L</th>
+        <th style="text-align:center;padding:12px 10px;">Pts</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in standings %}
+      <tr style="border-top:1px solid #334155;">
+        <td style="padding:11px 10px;color:#fff;font-weight:700;position:sticky;left:0;background:#1e293b;">{{ s.position }}</td>
+        <td style="padding:11px 10px;color:#fff;font-weight:600;position:sticky;left:36px;background:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;">{{ s.team.name }}</td>
+        <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.played }}</td>
+        <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.won }}</td>
+        <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.drawn }}</td>
+        <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.lost }}</td>
+        <td style="padding:11px 10px;text-align:center;color:#22c55e;font-weight:800;">{{ s.points }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="padding:20px;text-align:center;color:#94a3b8;">No standings for this league yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div style="height:90px;"></div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+<h1 style="font-size:28px;font-weight:800;margin:6px 0 6px;color:#fff;">Teams &amp; Research</h1>
+<p style="color:#94a3b8;font-size:14px;margin:0 0 16px;">Tap a team to see form, stats and last results.</p>
+
+<!-- TEAMS PAGE ONLY - League filter -->
+<div style="display:flex;gap:8px;margin:0 0 18px;overflow-x:auto;white-space:nowrap;padding-bottom:4px;">
+  <a href="/teams/" style="padding:10px 16px;border-radius:999px;background:{% if not request.GET.league %}#22c55e{% else %}#1e293b{% endif %};color:{% if not request.GET.league %}#000{% else %}#fff{% endif %};font-weight:700;text-decoration:none;font-size:13px;">All Teams</a>
+  {% for l in leagues %}
+  <a href="/teams/?league={{ l.id }}" style="padding:10px 16px;border-radius:999px;background:{% if request.GET.league == l.id|stringformat:'s' %}#22c55e{% else %}#1e293b{% endif %};color:{% if request.GET.league == l.id|stringformat:'s' %}#000{% else %}#fff{% endif %};font-weight:700;text-decoration:none;font-size:13px;white-space:nowrap;">{{ l.name|truncatechars:18 }}</a>
+  {% endfor %}
+</div>
+
+{% for s in standings %}
+<a href="/teams/{{ s.team.id }}/" style="text-decoration:none;color:inherit;display:block;">
+<div style="background:#1e293b;border-radius:16px;padding:16px;margin-bottom:12px;">
+  <div style="font-size:11px;letter-spacing:.5px;color:#94a3b8;text-transform:uppercase;">{{ s.league.name }} • #{{ s.position }} • {{ s.points }} PTS</div>
+  <div style="font-size:20px;font-weight:800;color:#fff;margin-top:6px;">{{ s.team.name }}</div>
+  <div style="font-size:13px;color:#94a3b8;margin-top:4px;">{{ s.played }}P • {{ s.won }}W • {{ s.drawn }}D • {{ s.lost }}L</div>
+  <div style="display:flex;gap:6px;margin-top:10px;">
+    {% if s.form %}
+      {% for f in s.form|cut:"," %}
+        {% if f == "W" %}<span style="background:#22c55e;color:#000;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">W</span>
+        {% elif f == "D" %}<span style="background:#64748b;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">D</span>
+        {% elif f == "L" %}<span style="background:#ef4444;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">L</span>
+        {% else %}<span style="background:#334155;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">{{ f }}</span>{% endif %}
+      {% endfor %}
+    {% else %}
+  <span style="color:#22c55e;font-size:13px;font-weight:600;">Tap for details &rarr;</span>
+    {% endif %}
+  </div>
+</div>
+</a>
+{% empty %}
+<p style="color:#94a3b8;">No teams found. Run fetch_teams.</p>
+{% endfor %}
+<div style="height:90px;"></div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+<h2 style="margin:4px 0 4px">Today's Matches</h2>
+<p style="color:#94a3b8;margin:0 0 16px">Pick 2 or more — we generate every possible combination for you.</p>
+
+<form method="post" action="{% url 'create_slip' %}" id="form">
+{% csrf_token %}
+{% for m in matches %}
+<label class="card" onclick="this.classList.toggle('selected')">
+  <input type="checkbox" name="match_ids" value="{{ m.id }}" class="check" onchange="updateCount()">
+  <div style="flex:1">
+    <div class="league">{{ m.league.name }} • {{ m.commence_time|date:"D, d M - H:i" }}</div>
+    <div class="teams">{{ m.home_team }} <span style="color:#94a3b8;font-weight:400">vs</span> {{ m.away_team }}</div>
+  </div>
+  <div class="odds">
+    <div class="odd"><small>1 • Home</small><b>{{ m.odds.home_win }}</b></div>
+    <div class="odd"><small>X • Draw</small><b>{{ m.odds.draw }}</b></div>
+    <div class="odd"><small>2 • Away</small><b>{{ m.odds.away_win }}</b></div>
+  </div>
+</label>
+{% endfor %}
+<p class="count" id="count">Select at least 2 matches • 2 matches = 9 combos • 3 = 27 • 4 = 81</p>
+</form>
+{% endblock %}
+
+{% block bottom %}
+<div class="stickybar">
+  <input type="number" name="stake" value="1000" form="form" placeholder="Stake UGX">
+  <button class="btn" form="form" id="btn" disabled>Generate →</button>
+</div>
+<script>
+function updateCount(){
+  let n = document.querySelectorAll('input[name="match_ids"]:checked').length;
+  let combos = n >= 2 ? Math.pow(3, n) : 0;
+  document.getElementById('count').innerText = n < 2 ? 'Select at least 2 matches' : `Selected ${n} matches = ${combos} combinations`;
+  document.getElementById('btn').disabled = n < 2;
+  document.getElementById('btn').innerText = n < 2 ? 'Generate →' : `Generate ${combos} Combos →`;
+}
+</script>
+{% endblock %}

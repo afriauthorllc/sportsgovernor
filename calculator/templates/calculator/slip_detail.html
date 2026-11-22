@@ -1,0 +1,23 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+<a href="{% url 'match_list' %}" style="color:#22c55e;text-decoration:none">← Back to Matches</a>
+<h2>Your Slip #{{ slip.id }}</h2>
+<p style="color:#94a3b8">Stake: <b style="color:white">{{ slip.stake }} UGX</b> • Total: <b style="color:#22c55e">{{ slip.total_combinations }} combinations</b></p>
+
+<table>
+<tr><th>#</th><th>Combination</th><th>Odds</th><th>To Win</th></tr>
+{% for c in combinations %}
+<tr>
+  <td>{{ c.combination_number }}</td>
+  <td class="combo">
+    {% for pick in c.picks %}
+      {{ pick.match }} → <b style="color:#22c55e">{{ pick.pick }}</b> @ {{ pick.odd }}<br>
+    {% endfor %}
+  </td>
+  <td><b>{{ c.combined_odds }}</b></td>
+  <td class="win">{{ c.potential_win }} UGX</td>
+</tr>
+{% endfor %}
+</table>
+<br><br>
+{% endblock %}

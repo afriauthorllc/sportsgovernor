@@ -1,0 +1,103 @@
+{% extends 'calculator/base.html' %}
+{% block content %}
+
+<!-- HERO -->
+<div style="margin:16px 0 8px;">
+  <h1 style="font-size:32px;font-weight:800;line-height:1.1;margin:0;color:#fff;">Govern Your Game.</h1>
+  <p style="color:#94a3b8;font-size:14px;margin:10px 0 14px;">Live scores, smart odds, and complete standings — all in one place.</p>
+</div>
+
+<!-- SEARCH -->
+<form method="get" action="/" style="display:flex;gap:8px;margin-bottom:18px;">
+  <input name="q" value="{{ q }}" placeholder="Search team or league..." style="flex:1;background:#1e293b;border:1px solid #334155;border-radius:12px;padding:13px 14px;color:#fff;font-size:14px;outline:none;" />
+  <button style="background:#22c55e;color:#000;border:none;border-radius:12px;padding:0 18px;font-weight:800;font-size:14px;">Search</button>
+</form>
+
+<!-- 2 CTA BUTTONS -->
+<div style="display:flex;gap:10px;margin-bottom:20px;">
+  <a href="/live/?status=live" style="flex:1;text-align:center;background:#ef4444;color:#fff;padding:13px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;">View Live</a>
+  <a href="/calculator/" style="flex:1;text-align:center;background:#22c55e;color:#000;padding:13px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;">Open Calculator</a>
+</div>
+
+<!-- LIVE NOW / NEXT KICKOFF -->
+{% if live_matches %}
+<div style="background:#7f1d1d;border:1px solid #ef4444;border-radius:16px;padding:14px;margin-bottom:20px;">
+  <div style="font-size:12px;font-weight:800;letter-spacing:.5px;color:#fca5a5;">● LIVE NOW</div>
+  {% for m in live_matches %}
+  <div style="display:flex;justify-content:space-between;margin-top:10px;color:#fff;font-weight:700;font-size:15px;">
+    <span>{{ m.home_team }} vs {{ m.away_team }}</span>
+    <span style="color:#fca5a5;">{{ m.status }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% elif next_match %}
+<a href="/live/" style="text-decoration:none;">
+<div style="background:#1e293b;border-radius:16px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <div style="font-size:11px;letter-spacing:.5px;color:#94a3b8;font-weight:700;">NEXT KICKOFF</div>
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-top:4px;">{{ next_match.home_team }} vs {{ next_match.away_team }}</div>
+    <div style="color:#94a3b8;font-size:12px;margin-top:2px;">{{ next_match.league.name }} • {{ next_match.commence_time|date:"D, d M" }} • {{ next_match.commence_time|date:"H:i" }}</div>
+  </div>
+  <div style="color:#22c55e;font-weight:800;font-size:20px;">&rarr;</div>
+</div>
+</a>
+{% endif %}
+
+<!-- TODAY'S MATCHES -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+  <h2 style="font-size:20px;font-weight:800;margin:0;color:#fff;">Today's Matches</h2>
+  <a href="/live/?status=today" style="color:#22c55e;font-weight:700;font-size:13px;text-decoration:none;">See all {{ today_count }} &rarr;</a>
+</div>
+
+{% for m in today_matches %}
+<div style="background:#1e293b;border-radius:16px;padding:14px;margin-bottom:10px;">
+  <div style="font-size:11px;letter-spacing:.5px;color:#94a3b8;text-transform:uppercase;">{{ m.league.name }} • {{ m.commence_time|date:"H:i" }} • {{ m.status }}</div>
+  <div style="font-size:17px;font-weight:700;color:#fff;margin-top:6px;">{{ m.home_team }} vs {{ m.away_team }}</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+    <span style="font-size:12px;color:#94a3b8;">{% if m.odds %}{{ m.odds|truncatechars:48 }}{% else %}Odds: -{% endif %}</span>
+    <a href="/calculator/" style="color:#22c55e;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;">+ Add</a>
+  </div>
+</div>
+{% empty %}
+<p style="color:#94a3b8;font-size:14px;">No matches today. Check Upcoming.</p>
+{% endfor %}
+
+<!-- CALCULATOR TEASER -->
+<div style="background:linear-gradient(135deg,#14532d,#22c55e);border-radius:16px;padding:18px;margin:22px 0;">
+  <div style="font-size:12px;font-weight:800;letter-spacing:.5px;color:#bbf7d0;">ALL-OUTCOME CALCULATOR</div>
+  <h3 style="font-size:20px;font-weight:800;color:#fff;margin:8px 0 6px;line-height:1.2;">Pick 2 matches,<br>get all 9 combos automatically.</h3>
+  <p style="font-size:13px;color:#dcfce7;margin:0 0 14px;">No manual typing. No missed outcome.</p>
+  <a href="/calculator/" style="display:block;text-align:center;background:#000;color:#fff;padding:12px;border-radius:10px;font-weight:800;text-decoration:none;font-size:14px;">Build My Slip &rarr;</a>
+</div>
+
+<!-- STANDINGS SNAPSHOT - PREMIER LEAGUE TOP 5 -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+  <h2 style="font-size:20px;font-weight:800;margin:0;color:#fff;">Premier League • Top 5</h2>
+  <a href="/live/standings/" style="color:#22c55e;font-weight:700;font-size:13px;text-decoration:none;">Full Table &rarr;</a>
+</div>
+<div style="background:#1e293b;border-radius:16px;padding:8px 14px;margin-bottom:22px;">
+  {% for s in top5 %}
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #334155;{% if forloop.last %}border-bottom:none;{% endif %}">
+    <span style="color:#fff;font-weight:700;font-size:14px;"><span style="color:#22c55e;margin-right:8px;">{{ s.position }}</span> {{ s.team.name }}</span>
+    <span style="color:#fff;font-weight:800;font-size:14px;">{{ s.points }} pts <span style="color:#94a3b8;font-weight:400;font-size:12px;">• {{ s.played }}P</span></span>
+  </div>
+  {% empty %}
+  <p style="color:#94a3b8;font-size:13px;padding:8px 0;">Run <b>fetch_teams</b> to load standings.</p>
+  {% endfor %}
+</div>
+
+<!-- TEAMS TO WATCH -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+  <h2 style="font-size:20px;font-weight:800;margin:0;color:#fff;">Teams to Watch</h2>
+  <a href="/teams/" style="color:#22c55e;font-weight:700;font-size:13px;text-decoration:none;">All Teams &rarr;</a>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  {% for t in teams_watch %}
+  <a href="/teams/" style="background:#1e293b;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;">{{ t.name }}</a>
+  {% empty %}
+  <p style="color:#94a3b8;font-size:13px;">No teams yet. Run fetch_teams.</p>
+  {% endfor %}
+</div>
+
+<div style="height:90px;"></div>
+{% endblock %}
