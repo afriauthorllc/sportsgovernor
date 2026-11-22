@@ -1,0 +1,12 @@
+services:
+    - type: web
+    name: sportsgovernor
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn usd.wsgi:application"
+    envVars:
+            - key: PYTHON_VERSION
+        value: 3.13.0
+        
