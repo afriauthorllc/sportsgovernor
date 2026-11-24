@@ -24,38 +24,46 @@ def team_detail(request, pk=None, team_id=None):
     show_all = request.GET.get('show') == 'all'
     limit = 15 if show_all else 5
     last_results = []
+
+    # Safe external_id - if blank, skip API call, don't crash
     try:
-        headers = {'X-Auth-Token': settings.FOOTBALL_DATA_KEY}
-        r = requests.get(
-            f"https://api.football-data.org/v4/teams/{team.external_id}/matches?status=FINISHED&limit={limit}",
-            headers=headers, timeout=10
-        )
-        if r.status_code == 200:
-            for m in r.json().get('matches', []):
-                score = m.get('score', {}).get('fullTime', {})
-                home, away = score.get('home'), score.get('away')
-                if home is None or away is None:
-                    continue
-                is_home = m['homeTeam']['id'] == int(team.external_id)
-                my = home if is_home else away
-                opp = away if is_home else home
-                result = 'W' if my > opp else 'D' if my == opp else 'L'
-                last_results.append({
-                    'date': m['utcDate'][:10],
-                    'competition': m['competition']['name'],
-                    'home_name': m['homeTeam']['name'],
-                    'away_name': m['awayTeam']['name'],
-                    'home_score': home,
-                    'away_score': away,
-                    'is_home': is_home,
-                    'result': result,
-                    'my_score': my,
-                    'opp_score': opp,
-                })
-            # Newest first - API returns oldest first, so reverse
-            last_results = list(reversed(last_results))
-    except Exception as e:
-        print(f"Results fetch error for {team.name}: {e}")
+        ext_id = int(team.external_id) if team.external_id else None
+    except (ValueError, TypeError):
+        ext_id = None
+
+    if ext_id:
+        try:
+            headers = {'X-Auth-Token': settings.FOOTBALL_DATA_KEY}
+            r = requests.get(
+                f"https://api.football-data.org/v4/teams/{ext_id}/matches?status=FINISHED&limit={limit}",
+                headers=headers, timeout=10
+            )
+            if r.status_code == 200:
+                for m in r.json().get('matches', []):
+                    score = m.get('score', {}).get('fullTime', {})
+                    home, away = score.get('home'), score.get('away')
+                    if home is None or away is None:
+                        continue
+                    is_home = m['homeTeam']['id'] == ext_id
+                    my = home if is_home else away
+                    opp = away if is_home else home
+                    result = 'W' if my > opp else 'D' if my == opp else 'L'
+                    last_results.append({
+                        'date': m['utcDate'][:10],
+                        'competition': m['competition']['name'],
+                        'home_name': m['homeTeam']['name'],
+                        'away_name': m['awayTeam']['name'],
+                        'home_score': home,
+                        'away_score': away,
+                        'is_home': is_home,
+                        'venue_label': 'Home' if is_home else 'Away',
+                        'result': result,
+                        'my_score': my,
+                        'opp_score': opp,
+                    })
+                last_results = list(reversed(last_results))
+        except Exception as e:
+            print(f"Results fetch error for {team.name}: {e}")
 
     # --- UPCOMING - from your Odds DB ---
     all_matches = Match.objects.filter(home_team__icontains=team.name) | Match.objects.filter(away_team__icontains=team.name)
@@ -68,4 +76,3 @@ def team_detail(request, pk=None, team_id=None):
         'upcoming': upcoming,
         'show_all': show_all,
     })
-    
