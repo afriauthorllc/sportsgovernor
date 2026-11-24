@@ -9,7 +9,7 @@ class Team(models.Model):
     league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="teams")
     name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=20, blank=True)
-    logo_url = models.URLField(blank=True)
+    crest_url = models.URLField(blank=True, null=True)
     # Form: W W D W W - stored as string, updated by API
     form = models.CharField(max_length=20, default="", blank=True)
     # e.g. "1st • 28 pts" - cached for list page
