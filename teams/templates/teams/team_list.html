@@ -15,8 +15,15 @@
 <a href="/teams/{{ s.team.id }}/" style="text-decoration:none;color:inherit;display:block;">
 <div style="background:#1e293b;border-radius:16px;padding:16px;margin-bottom:12px;">
   <div style="font-size:11px;letter-spacing:.5px;color:#94a3b8;text-transform:uppercase;">{{ s.league.name }} • #{{ s.position }} • {{ s.points }} PTS</div>
-  <div style="font-size:20px;font-weight:800;color:#fff;margin-top:6px;">{{ s.team.name }}</div>
-  <div style="font-size:13px;color:#94a3b8;margin-top:4px;">{{ s.played }}P • {{ s.won }}W • {{ s.drawn }}D • {{ s.lost }}L</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+    {% if s.team.crest_url %}
+      <img src="{{ s.team.crest_url }}" alt="{{ s.team.name }}" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+    {% endif %}
+    <div>
+      <div style="font-size:20px;font-weight:800;color:#fff;line-height:1.2;">{{ s.team.name }}</div>
+      <div style="font-size:13px;color:#94a3b8;margin-top:4px;">{{ s.played }}P • {{ s.won }}W • {{ s.drawn }}D • {{ s.lost }}L</div>
+    </div>
+  </div>
   <div style="display:flex;gap:6px;margin-top:10px;">
     {% if s.form %}
       {% for f in s.form|cut:"," %}

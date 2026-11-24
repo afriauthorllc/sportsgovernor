@@ -49,7 +49,7 @@ class Command(BaseCommand):
                         'league': league,
                         'name': t['name'],
                         'short_name': t.get('shortName', '') or t['name'][:3].upper(),
-                        'logo_url': t.get('crest', ''),
+                        'crest_url': t.get('crest', ''),
                         'position': row['position'],
                         'points': row['points'],
                         'form': row.get('form', '') or '',
