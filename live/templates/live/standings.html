@@ -11,7 +11,7 @@
     <thead>
       <tr style="color:#94a3b8;font-size:11px;letter-spacing:.5px;text-transform:uppercase;">
         <th style="text-align:left;padding:12px 10px;position:sticky;left:0;background:#1e293b;min-width:36px;">#</th>
-        <th style="text-align:left;padding:12px 10px;position:sticky;left:36px;background:#1e293b;min-width:150px;">Team</th>
+        <th style="text-align:left;padding:12px 10px;position:sticky;left:36px;background:#1e293b;min-width:170px;">Team</th>
         <th style="text-align:center;padding:12px 8px;">P</th>
         <th style="text-align:center;padding:12px 8px;">W</th>
         <th style="text-align:center;padding:12px 8px;">D</th>
@@ -23,7 +23,14 @@
       {% for s in standings %}
       <tr style="border-top:1px solid #334155;">
         <td style="padding:11px 10px;color:#fff;font-weight:700;position:sticky;left:0;background:#1e293b;">{{ s.position }}</td>
-        <td style="padding:11px 10px;color:#fff;font-weight:600;position:sticky;left:36px;background:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;">{{ s.team.name }}</td>
+        <td style="padding:11px 10px;color:#fff;font-weight:600;position:sticky;left:36px;background:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px;">
+          <a href="/teams/{{ s.team.id }}/" style="display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;">
+            {% if s.team.crest_url %}
+              <img src="{{ s.team.crest_url }}" alt="{{ s.team.name }}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0;">
+            {% endif %}
+            <span style="overflow:hidden;text-overflow:ellipsis;">{{ s.team.name }}</span>
+          </a>
+        </td>
         <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.played }}</td>
         <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.won }}</td>
         <td style="padding:11px 8px;text-align:center;color:#cbd5e1;">{{ s.drawn }}</td>
