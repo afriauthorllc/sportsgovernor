@@ -52,7 +52,7 @@ def slip_detail(request, slip_id):
     slip = get_object_or_404(BetSlip, id=slip_id)
     combinations = slip.combinations.all()
     return render(request, 'calculator/slip_detail.html', {'slip': slip, 'combinations': combinations})
-        
+
 from django.utils import timezone
 from datetime import timedelta
 from matches.models import Match, League
@@ -80,9 +80,9 @@ def home(request):
         commence_time__lt=today_end
     ).count()
 
-    # PREMIER LEAGUE TOP 5
+    # 【entity-PREMIER LEAGUE¦canonical_name=Premier League】 TOP 5
     try:
-        pl = League.objects.filter(name__icontains='Premier League').first()
+        pl = League.objects.filter(name__icontains='【entity-Premier League¦canonical_name=Premier League】').first()
         top5 = Standing.objects.filter(league=pl).select_related('team').order_by('position')[:5] if pl else []
     except Exception:
         top5 = []
@@ -96,6 +96,33 @@ def home(request):
         today_matches = Match.objects.filter(home_team__icontains=q) | Match.objects.filter(away_team__icontains=q)
         today_matches = today_matches.order_by('commence_time')[:6]
 
+    # --- Attach crests to Match objects (Match only stores names as text) ---
+    _crest_by_name = {t.name.lower(): t.crest_url for t in Team.objects.exclude(crest_url='') if t.crest_url}
+
+    def _crest_for(team_name):
+        if not team_name:
+            return ''
+        name = team_name.lower().strip()
+        if name in _crest_by_name:
+            return _crest_by_name[name]
+        # Fallback: contains match, e.g. "Olympiakos" in "Olympiakos Piraeus"
+        for k, v in _crest_by_name.items():
+            if k in name or name in k:
+                return v
+        return ''
+
+    def _attach_crests(matches):
+        for m in matches or []:
+            m.home_crest = _crest_for(m.home_team)
+            m.away_crest = _crest_for(m.away_team)
+        return matches
+
+    live_matches = _attach_crests(live_matches)
+    today_matches = _attach_crests(today_matches)
+    if next_match:
+        next_match.home_crest = _crest_for(next_match.home_team)
+        next_match.away_crest = _crest_for(next_match.away_team)
+
     return render(request, 'calculator/home.html', {
         'live_matches': live_matches,
         'next_match': next_match,
@@ -105,6 +132,3 @@ def home(request):
         'teams_watch': teams_watch,
         'q': q,
     })
-    
-        
-        

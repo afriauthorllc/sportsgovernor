@@ -19,7 +19,7 @@
   <a href="/teams/" style="flex:1;text-align:center;background:#1e293b;color:#fff;padding:13px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;border:1px solid #334155;">Browse Teams</a>
 </div>
 
-<!-- NEXT KICKOFF / LIVE NOW - NOW THE HERO CARD, LIKE YOUR SCREENSHOT -->
+<!-- NEXT KICKOFF / LIVE NOW -->
 {% if live_matches %}
 <div style="background:#7f1d1d;border:1px solid #ef4444;border-radius:16px;padding:16px;margin-bottom:20px;text-align:center;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -27,10 +27,12 @@
     <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;">LIVE</span>
   </div>
   {% for m in live_matches %}
-  <div style="margin-top:14px;">
-    <div style="color:#fff;font-weight:800;font-size:18px;">{{ m.home_team }} vs {{ m.away_team }}</div>
-    <div style="color:#fca5a5;font-size:13px;margin-top:4px;">{{ m.league.name }} • {{ m.status }}</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;">
+    {% if m.home_crest %}<img src="{{ m.home_crest }}" alt="{{ m.home_team }}" style="width:32px;height:32px;object-fit:contain;">{% endif %}
+    <span style="color:#fff;font-weight:800;font-size:17px;">{{ m.home_team }} vs {{ m.away_team }}</span>
+    {% if m.away_crest %}<img src="{{ m.away_crest }}" alt="{{ m.away_team }}" style="width:32px;height:32px;object-fit:contain;">{% endif %}
   </div>
+  <div style="color:#fca5a5;font-size:13px;margin-top:4px;">{{ m.league.name }} • {{ m.status }}</div>
   {% endfor %}
 </div>
 {% elif next_match %}
@@ -40,14 +42,22 @@
     <span style="font-size:11px;letter-spacing:.5px;color:#94a3b8;font-weight:700;">NEXT KICKOFF</span>
     <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;">UPCOMING</span>
   </div>
-  <div style="color:#fff;font-weight:800;font-size:20px;margin-top:14px;">{{ next_match.home_team }} vs {{ next_match.away_team }}</div>
-  <div style="color:#22c55e;font-weight:800;font-size:28px;margin:8px 0 2px;">{{ next_match.commence_time|date:"H:i" }}</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;">
+    {% if next_match.home_crest %}
+      <img src="{{ next_match.home_crest }}" alt="{{ next_match.home_team }}" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+    {% endif %}
+    <div style="color:#fff;font-weight:800;font-size:20px;line-height:1.2;">{{ next_match.home_team }}<br><span style="color:#94a3b8;font-size:14px;font-weight:600;">vs</span><br>{{ next_match.away_team }}</div>
+    {% if next_match.away_crest %}
+      <img src="{{ next_match.away_crest }}" alt="{{ next_match.away_team }}" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+    {% endif %}
+  </div>
+  <div style="color:#22c55e;font-weight:800;font-size:28px;margin:10px 0 2px;">{{ next_match.commence_time|date:"H:i" }}</div>
   <div style="color:#94a3b8;font-size:12px;">{{ next_match.league.name }} • {{ next_match.commence_time|date:"D, d M" }}</div>
 </div>
 </a>
 {% endif %}
 
-<!-- TODAY'S MATCHES - GROUPED BY LEAGUE, LIKE YOUR SCREENSHOT -->
+<!-- TODAY'S MATCHES - GROUPED BY LEAGUE -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
   <h2 style="font-size:20px;font-weight:800;margin:0;color:#fff;">Today's Matches</h2>
   <a href="/live/?status=today" style="color:#22c55e;font-weight:700;font-size:13px;text-decoration:none;">See all {{ today_count }} &rarr;</a>
@@ -59,8 +69,17 @@
 {% for m in group.list %}
 <div style="background:#1e293b;border-radius:16px;padding:14px;margin-bottom:10px;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-size:16px;font-weight:700;color:#fff;">{{ m.home_team }}<br><span style="color:#94a3b8;font-weight:400;">{{ m.away_team }}</span></div>
-    <div style="text-align:right;">
+    <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.5;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        {% if m.home_crest %}<img src="{{ m.home_crest }}" alt="" style="width:22px;height:22px;object-fit:contain;">{% endif %}
+        {{ m.home_team }}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:#94a3b8;font-weight:400;">
+        {% if m.away_crest %}<img src="{{ m.away_crest }}" alt="" style="width:22px;height:22px;object-fit:contain;">{% endif %}
+        {{ m.away_team }}
+      </div>
+    </div>
+    <div style="text-align:right;flex-shrink:0;">
       <div style="font-size:16px;font-weight:800;color:#fff;">{{ m.commence_time|date:"H:i" }}</div>
       <div style="font-size:11px;color:#22c55e;font-weight:700;margin-top:2px;">{{ m.status }}</div>
     </div>
@@ -117,7 +136,7 @@
   {% endfor %}
 </div>
 
-<!-- OUTCOME EXPLORER - MOVED TO BOTTOM, SOFTER WORDING, SAME COLORS -->
+<!-- OUTCOME EXPLORER -->
 <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:18px;margin:6px 0 10px;">
   <div style="font-size:12px;font-weight:800;letter-spacing:.5px;color:#94a3b8;">OUTCOME EXPLORER</div>
   <h3 style="font-size:19px;font-weight:800;color:#fff;margin:8px 0 6px;line-height:1.2;">Pick 2 matches,<br>see all possible outcomes.</h3>
