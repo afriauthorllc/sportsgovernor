@@ -16,13 +16,13 @@ class Command(BaseCommand):
 
         # Football-Data codes: PL, PD, SA, BL1, FL1, CL, EL
         competitions = [
-            ('PL', 'Premier League'),
-            ('PD', 'La Liga'),
-            ('SA', 'Serie A'),
-            ('BL1', 'Bundesliga'),
-            ('FL1', 'Ligue 1'),
-            ('CL', 'Champions League'),
-        ]
+    ('PL', 'Premier League'),
+    ('PD', 'La Liga'),
+    ('SA', 'Serie A'),
+    ('BL1', 'Bundesliga'),
+    ('FL1', 'Ligue 1'),
+    ('CL', 'Champions League'),
+]
 
         total = 0
         for code, league_name in competitions:
@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"{league_name}: Error {r.status_code} - {r.text[:200]}")
                 continue
             data = r.json()
-            # For CL there are multiple groups, we take total table if available else first group
+            # For CL / EL there are multiple groups, we take total table if available else first group
             tables = data.get('standings', [])
             if not tables:
                 continue
@@ -84,4 +84,3 @@ class Command(BaseCommand):
             self.stdout.write(f"{league_name}: Saved {len(rows)} teams")
 
         self.stdout.write(self.style.SUCCESS(f"Done! Total Teams/Standings: {total}"))
-
